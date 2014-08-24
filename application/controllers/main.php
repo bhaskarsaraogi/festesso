@@ -88,7 +88,7 @@ class Main extends CI_Controller {
         $password = $this->input->post('password');
 
         $check_val = $this->simpleloginsecure->login($user_name, $password);
-
+        $this->session->set_userdata(array('logged_in' => FALSE));
         $data['check_val'] = $check_val;
 
         if (!$check_val)
@@ -100,6 +100,7 @@ class Main extends CI_Controller {
         else
         {
           if ($this->session->userdata('account_verified')) {
+            $this->session->set_userdata(array('logged_in' => TRUE));
             redirect('user', 'location');
           }
           else {
@@ -158,8 +159,8 @@ class Main extends CI_Controller {
 
  public function verify($user_name,$verification_key)
   {
-    $e = urldecode($user_name);
-    $email = $this->encrypt->decode($e);
+    $email = urldecode($user_name);
+    // $email = $this->encrypt->decode($e);
     $check_val = $this->user->verify_account($email,$verification_key);
     if ($check_val)
     {

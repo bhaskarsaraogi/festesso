@@ -7,6 +7,8 @@
     Your account has been created.<br>
     To login, please verify your account by clicking on the verification mail sent on your email.
   </p>
+  <?php anchor('main/resend_verification_mail', 'Click here')." to resend verification mail."; 
+) ?>
   
 </section>
 

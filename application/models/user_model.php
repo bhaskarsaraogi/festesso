@@ -130,8 +130,8 @@ class User_model extends CI_Model {
     $verification_key = $this->get_verification_key($user_name);
 
     $toemail = $user_name;
-    $u = $this->encrypt->encode($user_name);
-    $user = urlencode($u);
+    // $u = $this->encrypt->encode($user_name);
+    $user = urlencode($user_name);
 
     $this->email->set_newline("\r\n");
     $this->email->from('f2012598@goa.bits-pilani.ac.in', 'f2012598');
