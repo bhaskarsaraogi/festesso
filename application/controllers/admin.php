@@ -1,9 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Admin extends CI_Controller {
- 
+
   function __construct()
-  { 
+  {
     parent::__construct();
     if ($this->session->userdata('is_admin') == TRUE && $this->session->userdata('logged_in') == TRUE) {
       $this->session->set_userdata(array('login_flag' => 1));
@@ -13,7 +13,7 @@ class Admin extends CI_Controller {
       $this->session->set_userdata(array('login_flag' => 0));
     }
     $this->session->set_userdata(array('admin_controls' => TRUE));
-    $this->load->model('admin_model', 'admin'); 
+    $this->load->model('admin_model', 'admin');
     $this->load->model('user_model', 'user');
     $this->load->model('event_model', 'event');
   }
@@ -22,20 +22,20 @@ class Admin extends CI_Controller {
   {
     $this->output->cache(3600);
     $data['page_title'] = 'Admin Controls';
-    $this->load->view('admin/main', $data);           
+    $this->load->view('admin/main', $data);
   }
-  
+
   public function login()
-  {         
+  {
     if ($this->session->userdata('login_flag')) {
       redirect('admin/dashboard', 'location');
     }
-    else {      
+    else {
       $data['page_title'] = 'Admin Login';
       $data['error'] = NULL;
-      
+
       $this->form_validation->set_error_delimiters('<div class="alert alert-error"><p>', '</p></div>');
-      
+
       if ($this->form_validation->run('standard/login') == FALSE) //present and validate login form
       {
         $this->load->view('admin/login', $data);
@@ -44,16 +44,16 @@ class Admin extends CI_Controller {
       {
         $user_name = $this->input->post('user_name');
         $password = $this->input->post('password');
-        
+
         $check_val = $this->simpleloginsecure->login($user_name, $password);
 
         $data['check_val'] = $check_val;
-        
+
         if (!$check_val)
         {
           $data['error'] = 'Incorrect username or password. Please try again.';
           $this->load->view('admin/login', $data);
-        }                        
+        }
         else
         {
           $user_role = $this->user->get_user_role($user_name);
@@ -69,30 +69,30 @@ class Admin extends CI_Controller {
           }
         }
       }
-    }              
+    }
   }
-  
+
   public function dashboard()
-  {  
+  {
     if ($this->session->userdata('login_flag')) {
       $data['page_title'] = 'Dashboard';
-      
+
       $this->load->view('admin/dashboard', $data);
     }
     else {
-      redirect('404', 'location');
-    }                
+      redirect('admin/login', 'location');
+    }
   }
-  
+
   public function settings()
-  { 
+  {
     if ($this->session->userdata('login_flag'))
     {
       $data['page_title'] = 'Settings';
       $data['error'] = null;
-      
+
       $this->form_validation->set_error_delimiters('<div class="alert alert-error"><p>', '</p></div>');
-      
+
       if ($this->form_validation->run('admin/settings') == FALSE) {
         $this->load->view('admin/settings', $data);
       }
@@ -102,7 +102,7 @@ class Admin extends CI_Controller {
         $arr_detals['event_desp'] = $this->input->post('event_desp');
         $arr_detals['min_part'] = $this->input->post('min_part');
         $arr_detals['max_part'] = $this->input->post('max_part');
-        
+
         $check_val = $this->event->check_event_exists($arr_detals['event_name']);
 
         if($check_val)
@@ -119,17 +119,17 @@ class Admin extends CI_Controller {
           // redirect('admin/settings', 'location');
           else
           {
-          $this->load->view('admin/settings', $data); 
+          $this->load->view('admin/settings', $data);
           }
-        }                 
+        }
       }
     }
     else
     {
-      redirect('404', 'location');
+      redirect('admin/login', 'location');
     }
   }
-  
+
   public function edit_event($id='')
   {
     if ($this->session->userdata('login_flag'))
@@ -144,7 +144,7 @@ class Admin extends CI_Controller {
       else
       {
         $check_val = $this->event->check_event_id_exists($id);
-        if(!$check_val) 
+        if(!$check_val)
         {
           redirect('admin/edit_event','location');
         }
@@ -180,20 +180,20 @@ class Admin extends CI_Controller {
             {
               $this->event->update_event_details($data['event_id'], $arr_details);
               $data['error'] = "<strong>Success!</strong> Event details have been modified.";
-              $this->load->view('admin/edit_event', $data); 
+              $this->load->view('admin/edit_event', $data);
             }
           }
       }
     }
-  }       
+  }
     else
     {
-      redirect('404', 'location');
+      redirect('admin/login', 'location');
     }
   }
-  
+
   public function make_admin($user_name)
-  {          
+  {
     if ($this->session->userdata('login_flag')) {
       $data['page_title'] = 'Make Admin';
       $id = $this->user->get_user_id($user_name);
@@ -203,11 +203,11 @@ class Admin extends CI_Controller {
     }
     else
     {
-      redirect('404', 'location');
-    }          
+      redirect('admin/login', 'location');
+    }
   }
-    
-  
+
+
   public function logout()
   {
     if ($this->session->userdata('login_flag'))
@@ -219,8 +219,8 @@ class Admin extends CI_Controller {
     }
     else
     {
-      redirect('404', 'location');
-    }  
+      redirect('admin/login', 'location');
+    }
   }
-  
+
 }

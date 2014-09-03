@@ -19,7 +19,7 @@ class SimpleLoginSecure
 	 * @param	bool
 	 * @return	bool
 	 */
-	function create($user_name = '', $user_pass = '', $auto_login = TRUE) 
+	function create($user_name = '', $user_pass = '', $auto_login = TRUE)
 	{
 		$this->CI =& get_instance();
 
@@ -27,11 +27,11 @@ class SimpleLoginSecure
 		if($user_name == '' OR $user_pass == '') {
 			return false;
 		}
-		
+
 		//Check against user table
-		$this->CI->db->where('user_email', $user_name); 
+		$this->CI->db->where('user_email', $user_name);
 		$query = $this->CI->db->get_where($this->user_table);
-		
+
 		if ($query->num_rows() > 0) //user_name already exists
 			return false;
 
@@ -45,14 +45,14 @@ class SimpleLoginSecure
 					'user_password' => $user_pass_hashed
 				);
 
-		$this->CI->db->set($data); 
+		$this->CI->db->set($data);
 
-		if(!$this->CI->db->insert($this->user_table)) //There was a problem! 
-			return false;						
-				
+		if(!$this->CI->db->insert($this->user_table)) //There was a problem!
+			return false;
+
 		if($auto_login)
 			$this->login($user_name, $user_pass);
-		
+
 		return true;
 	}
 
@@ -64,7 +64,7 @@ class SimpleLoginSecure
 	 * @param	string
 	 * @return	bool
 	 */
-	function login($user_name = '', $user_pass = '') 
+	function login($user_name = '', $user_pass = '')
 	{
 		$this->CI =& get_instance();
 
@@ -75,16 +75,16 @@ class SimpleLoginSecure
 		//Check if already logged in
 		if($this->CI->session->userdata('user_name') == $user_name)
 			return true;
-		
-		
+
+
 		//Check against user table
-		$this->CI->db->where('user_email', $user_name); 
+		$this->CI->db->where('user_email', $user_name);
 		$query = $this->CI->db->get_where($this->user_table);
 
-		
-		if ($query->num_rows() > 0) 
+
+		if ($query->num_rows() > 0)
 		{
-			$user_data = $query->row_array(); 
+			$user_data = $query->row_array();
 
 			$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
 
@@ -93,7 +93,7 @@ class SimpleLoginSecure
 
 			//Destroy old session
 			$this->CI->session->sess_destroy();
-			
+
 			//Create a fresh, brand new session
 			$this->CI->session->sess_create();
 
@@ -104,13 +104,13 @@ class SimpleLoginSecure
 			$user_data['user'] = $user_data['user_email']; // for compatibility with Simplelogin
 			$user_data['logged_in'] = true;
 			$this->CI->session->set_userdata($user_data);
-			
+
 			return true;
-		} 
-		else 
+		}
+		else
 		{
 			return false;
-		}	
+		}
 
 	}
 
@@ -121,7 +121,7 @@ class SimpleLoginSecure
 	 * @return	void
 	 */
 	function logout() {
-		$this->CI =& get_instance();		
+		$this->CI =& get_instance();
 
 		$this->CI->session->sess_destroy();
 	}
@@ -133,16 +133,16 @@ class SimpleLoginSecure
 	 * @param       integer
 	 * @return	bool
 	 */
-	function delete($user_id) 
+	function delete($user_id)
 	{
 		$this->CI =& get_instance();
-		
+
 		if(!is_numeric($user_id))
-			return false;			
+			return false;
 
 		return $this->CI->db->delete($this->user_table, array('iduser_master' => $user_id));
 	}
-        
+
         /**
 	 * New password
 	 *
@@ -152,18 +152,18 @@ class SimpleLoginSecure
 	 */
 	function new_password($user_name = '', $user_pass = '')
 	{
-		$this->CI =& get_instance();	
+		$this->CI =& get_instance();
 
 		//Hash user_pass using phpass
 		$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
 		$user_pass_hashed = $hasher->HashPassword($user_pass);
-                
+
                 $data = array(
                     'user_password' => $user_pass_hashed
                     );
-                $this->CI->db->where('user_name', $user_name);
+                $this->CI->db->where('user_email', $user_name);
                 return $this->CI->db->update($this->user_table, $data);
 	}
-	
+
 }
 ?>
