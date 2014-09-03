@@ -2,10 +2,10 @@
 
 <section>
   <div class="page-header"><h1>Enter New Password </h1></div>
-  
+
   <div class="well well-large">
     <!-- <h2>Change Your Password</h2> -->
-    <?php echo form_open('main/password_reset', array('class' => 'form-horizontal')); ?>
+    <?php echo form_open('main/reset_password', array('class' => 'form-horizontal')); ?>
     <div class="control-group">
       <?php echo form_label('New Password', 'password', array('class' => 'control-label')); ?>
       <div class="controls">
@@ -48,11 +48,18 @@
         ?>
       </div>
     </div>
-    <?php echo form_close(); ?>
-  </div>
-
-
-  <p>Please send a mail to <a href="mailto:admin@bits-melange.com">admin@bits-melange.com</a> from your BITS mail so that we can send you a new password.</p>
+     <?php
+    echo form_close();
+    if ($error != "") {
+      ?>
+      <div class="alert alert-error">
+        <p><?php echo $error; ?></p>
+      </div>
+      <?php
+    }
+    echo validation_errors();
+    ?>
+  <!-- <p>Please send a mail to <a href="mailto:admin@bits-melange.com">admin@bits-melange.com</a> from your BITS mail so that we can send you a new password.</p> -->
 </section>
 
 <?php include 'application/views/inc/footer.php'; ?>

@@ -15,7 +15,7 @@ class Main extends CI_Controller {
 
   public function index()
   {
-    $data['page_title'] = 'Home';    
+    $data['page_title'] = 'Home';
     $data['user_count'] = $this->user->count_users();
     $this->load->view('standard/main', $data);
   }
@@ -23,7 +23,7 @@ class Main extends CI_Controller {
   public function register()
   {
 
-  
+
       $data['page_title'] = 'Register';
       $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
       $data['error'] = NULL;
@@ -36,7 +36,7 @@ class Main extends CI_Controller {
         $user_name = $this->input->post('user_name');
         $password = $this->input->post('password');
 
-        
+
       //check if user_name already registered.
         $check_val = $this->user->check_user_name_exists($user_name);
 
@@ -55,8 +55,8 @@ class Main extends CI_Controller {
            $this->user->generate_userdetails($user_name);
            $this->user->generate_verification_key($user_name);
            $this->user->send_verification_mail($user_name);
-           
-           
+
+
            $data['page_title'] = 'Registration Success';
            $this->load->view('messages/registration_success', $data);
          }
@@ -72,7 +72,7 @@ class Main extends CI_Controller {
 
   public function login()
   {
-    
+
       $data['page_title'] = 'Login';
       $data['error'] = NULL;
 
@@ -104,20 +104,21 @@ class Main extends CI_Controller {
             redirect('user', 'location');
           }
           else {
-            $data['page_title'] = 'Registration Success';
-            $this->load->view('messages/registration_success', $data);
+            $data['page_title'] = 'Acount not verified';
+            $this->load->view('messages/account_not_verified', $data);
           }
-          
+
         }
       }
   }
 
   public function resend_verification_mail()
   {
-    
-      $data['page_title'] = 'Resend Verification MAIL';
+
+      $data['page_title'] = 'Resend Verification Mail';
       $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
       $data['error'] = NULL;
+
       if ($this->form_validation->run('standard/verify') == FALSE) //validate registration data
       {
         $this->load->view('standard/resend_verification_mail', $data);
@@ -131,7 +132,7 @@ class Main extends CI_Controller {
 
         if(!$check_val)
         {
-         $data['error'] = $user_name." is not registered with us, you can signup with it ".anchor('main/register', 'here'); 
+         $data['error'] = $user_name." is not registered with us, you can signup with it ".anchor('main/register', 'here');
          $this->output->cache(5);
          $this->load->view('standard/resend_verification_mail', $data);
         }
@@ -141,9 +142,9 @@ class Main extends CI_Controller {
          $account_verified = $this->user->check_account_verified($user_name);
          if ($account_verified)
          {
-             
+
            $data['page_title'] = 'Account Verified';
-           $data['error'] = $user_name." has already been verified. ".anchor('main/forgot_password', 'Click here')." to reset your password"; 
+           $data['error'] = $user_name." has already been verified. ".anchor('main/forgot_password', 'Click here')." to reset your password";
 
            $this->load->view('standard/resend_verification_mail', $data);
          }
@@ -177,9 +178,9 @@ class Main extends CI_Controller {
 
   public function forgot_password()
   {
-    
+
       $data['page_title'] = 'Forgot Your Password';
-      
+
       $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
       $data['error'] = NULL;
       if ($this->form_validation->run('standard/verify') == FALSE) //validate registration data
@@ -195,7 +196,7 @@ class Main extends CI_Controller {
 
         if(!$check_val)
         {
-         $data['error'] = $user_name." is not registered with us."; 
+         $data['error'] = $user_name." is not registered with us.";
          $this->load->view('standard/forgot_password', $data);
         }
         else // proceed with password reset
@@ -205,35 +206,46 @@ class Main extends CI_Controller {
          $this->load->view('messages/password_sent', $data);
         }
       }
-      
+
   }
 
 
-  public function password_reset($key)
+  public function password_reset($username,$password_verification_key)
   {
-    $e = urldecode($key);
-    $email = $this->encrypt->decode($e);
-    $em = explode("~", $email);
-    $user_name = $em[1];
+    $email = urldecode($username);
 
-    $data['page_title'] = 'Enter new password';
-     
-    $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
-    $data['error'] = NULL;
-    if ($this->form_validation->run('standard/change_password') == FALSE) //validate registration data
-     {
-       $this->load->view('standard/password_reset', $data);
-     }
+    $check_val = $this->user->verify_password_reset_request($email,$password_verification_key);
+
+    if ($check_val) {
+      $this->session->set_userdata(array('username' => $email));
+      redirect('main/reset_password','location');
+
+    }
     else
-     {
-       $password = $this->input->post('password');
-       $this->simpleloginsecure->new_password($user_name, $password);
-       $data['page_title'] = 'Password changed';
-       $this->load->view('standard/password_changed', $data);
-     }
-
+    {
+      $data['page_title'] = 'Account Verification Problem';
+      $this->load->view('messages/account_verification_problem', $data);
+    }
   }
 
+  public function reset_password()
+  {
+      $data['page_title'] = 'Enter new password';
+      $username = $this->session->userdata('username');
+      $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+      $data['error'] = NULL;
+      if ($this->form_validation->run('standard/change_password') == FALSE) //validate registration data
+      {
+         $this->load->view('standard/password_reset', $data);
+      }
+      else
+      {
+         $password = $this->input->post('password');
+         $this->simpleloginsecure->new_password($username, $password);
+         $data['page_title'] = 'Password changed';
+         $this->load->view('standard/password_changed', $data);
+      }
+  }
 
 
   public function changelog()

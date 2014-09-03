@@ -118,11 +118,32 @@ class User_model extends CI_Model {
     return $verification_key;
   }
 
+  function generate_password_verification_key($user_name)
+  {
+    $result = $this->db->get_where('user_master', array('user_email' => $user_name));
+    $salt = $user_name.rand(100,600);
+    $password_verification_key = md5($salt);
+    $id = $result->first_row()->iduser_master;
+    $this->db->where('iduser_master', $id);
+    $data = array(
+      'password_verification_key' => $password_verification_key,
+    );
+    $result = $this->db->update('user_master', $data);
+    return $password_verification_key;
+  }
+
   function get_verification_key($user_name)
   {
     $id = $this->get_user_id($user_name);
     $result = $this->db->get_where('user_master', array('iduser_master' => $id));
     return $result->first_row()->verification_key;
+  }
+
+  function get_password_verification_key($user_name)
+  {
+    $id = $this->get_user_id($user_name);
+    $result = $this->db->get_where('user_master', array('iduser_master' => $id));
+    return $result->first_row()->password_verification_key;
   }
 
   function send_verification_mail($user_name)
@@ -146,21 +167,20 @@ class User_model extends CI_Model {
         return;
       } else {
         show_error($this->email->print_debugger());
-      } 
+      }
   }
 
   function send_new_password($user_name)
   {
 
-    $to = "waves~".$user_name;
-    $u = $this->encrypt->encode($to);
-    $user = urlencode($u);
+    $password_verification_key = $this->generate_password_verification_key($user_name);
+    $user = urlencode($user_name);
 
     $this->email->set_newline("\r\n");
     $this->email->from('f2012598@goa.bits-pilani.ac.in', 'f2012598');
     $this->email->to($user_name);
 
-    $message = 'Click the following link to reset your password.<br/><a href="'.site_url().'/main/password_reset/'.$user.'">'.site_url().'/main/password_reset/'.$user.'</a>';
+    $message = 'Click the following link to reset your password.<br/><a href="'.site_url().'/main/password_reset/'.$user.'/'.$password_verification_key.'">'.site_url().'/main/password_reset/'.$user.'/'.$password_verification_key.'</a>';
 
     $this->email->subject('Password reset request');
     $this->email->message($message);
@@ -169,22 +189,22 @@ class User_model extends CI_Model {
         return;
       } else {
         show_error($this->email->print_debugger());
-      } 
-    
+      }
 
-    $this->email->from('melange.10.yearbook@gmail.com', 'Melange 2009');
-    $this->email->to($toemail);
-    $this->email->reply_to('melange.10.yearbook@gmail.com', 'Melange 2009');
-
-    $message = 'You had requested for a new password.<br/>Your new password is '.$password;
-
-    $this->email->subject('Melange - Forgot Password');
-    $this->email->message($message);
-
-    $this->email->send();
   }
 
-  
+  function verify_password_reset_request($username,$password_verification_key)
+  {
+    $result = $this->db->get_where('user_master', array('user_email' => $username));
+    if ($result->num_rows())
+    {
+      if ($password_verification_key == $result->first_row()->password_verification_key) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
 
 
 
