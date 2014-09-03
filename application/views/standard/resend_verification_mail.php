@@ -2,7 +2,7 @@
 
 <section>
   <div class="page-header"><h1>Re-receive your verification mail</h1></div>
-  
+
   <?php echo form_open('main/resend_verification_mail', array('class' => 'form-horizontal')); ?>
   <div class="control-group">
     <?php echo form_label('Email', 'user_name', array('class' => 'control-label')); ?>
@@ -38,7 +38,7 @@
     </div>
     <?php
     echo form_close();
-    if ( $error != NULL ) 
+    if ( $error != NULL )
       echo '<div class="alert alert-error">'. $error.' </div>';
 
       echo validation_errors();
@@ -46,13 +46,6 @@
 
 
 
-
-
-
-
-
-
-  <p>Please send a mail to <a href="mailto:admin@bits-melange.com">admin@bits-melange.com</a> from your BITS mail so that we can send you a new password.</p>
 </section>
 
 <?php include 'application/views/inc/footer.php'; ?>
