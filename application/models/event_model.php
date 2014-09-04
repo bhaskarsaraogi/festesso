@@ -38,7 +38,7 @@ class Event_model extends CI_Model {
   function add_event($data)
   {
     $result = $this->db->insert('event_master', $data);
-    return $result; 
+    return $result;
   }
 
   function get_events($query="")
@@ -52,11 +52,11 @@ class Event_model extends CI_Model {
   {
     if ($via == 'id')
     {
-      
+
       $result = $this->db->get_where('event_master', array('event_id' => $query));
     }
     else
-    { 
+    {
       $id = $this->get_event_id($query);
       $result = $this->db->get_where('event_master', array('event_id' => $id));
     }
@@ -78,23 +78,5 @@ class Event_model extends CI_Model {
 
 
 
-
-  function generate_userdetails($user_name, $data = array())
-  {
-    $id = $this->get_user_id($user_name);
-    $data['user_master_iduser_details'] = $id;
-    $this->db->insert('user_details', $data);
-  }
-
-  
-
-  function get_userdetails_id($user_name)
-  {
-    $id = $this->get_user_id($user_name);
-    $result = $this->db->get_where('user_details', array('user_master_iduser_details' => $id));
-    return $result->first_row()->iduser_details;
-  }
-
-  
 
 }

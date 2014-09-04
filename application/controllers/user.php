@@ -26,7 +26,7 @@ class User extends CI_Controller {
       $user_id = $this->user->get_userdetails_id($user_name);
       $user_details = $this->user->get_userdetails($user_name);
       $data['user_details'] = $user_details;
-      $this->load->view('user/dashboard', $data);    
+      $this->load->view('user/dashboard', $data);
   }
 
   public function edit_profile()
@@ -37,7 +37,7 @@ class User extends CI_Controller {
     $this->form_validation->set_error_delimiters('<div class="alert alert-error"><p>', '</p></div>');
 
     $user_name = $this->session->userdata('user_name');
-     
+
     $user_details = $this->user->get_userdetails($user_name);
     $data['fullName'] = $user_details->name;
     if ($user_details->dob != NULL)
@@ -78,7 +78,7 @@ class User extends CI_Controller {
          $arr_userdetails['name'] = $fullName;
        else
          $arr_userdetails['name'] = NULL;
-        
+
        if ($dob)
          $arr_userdetails['dob'] = $dob;
        else
@@ -124,9 +124,9 @@ class User extends CI_Controller {
        redirect('user', 'location');
      }
    }
-    
 
-  
+
+
 
   public function search() {
      $data['page_title'] = 'Search';
@@ -136,7 +136,7 @@ class User extends CI_Controller {
      $data['search_query'] = $search_query;
      $this->load->view('user/search', $data);
   }
-    
+
 
   public function profile($query)
   {
@@ -163,22 +163,39 @@ class User extends CI_Controller {
        $data['user_details'] = FALSE;
      }
      $this->load->view('user/profile', $data);
-    
+
   }
 
-  public function events($value='')
+  public function events($value='',$event_id='')
   {
-    $data['page_title'] = "Events";
-    $event_details = $this->event->get_events();
-    $data['event_details'] = $event_details;
+    if ($value == 'register' && $event_id != '') {
+      $user_name = $this->input->post('fullName');
+      if ($user_name) {
+        echo "hello";
+        die();
+      }
+      $data['page_title'] = "Register";
+      $event_details = $this->event->get_event_details($event_id);
+      if ($event_details) {
+        $data['event_details'] = $event_details;
+        $this->load->view('user/events_register', $data);
+      } else {
+        $this->load->view('user/event_not_exist', $data);
+      }
 
-    $this->load->view('user/events', $data);
+    }else {
+      $data['page_title'] = "Events";
+      $events = $this->event->get_events();
+      $data['events'] = $events;
+      $this->load->view('user/events', $data);
+    }
+
   }
 
- 
+
   public function change_password()
   {
-    
+
      if ($this->form_validation->run('user/set_new_password') == FALSE)
      {
        redirect('user/edit_profile', 'location');
@@ -190,18 +207,18 @@ class User extends CI_Controller {
        $this->simpleloginsecure->new_password($user_name, $password);
        redirect('user/edit_profile', 'location');
      }
-   
+
   }
 
 
   public function logout()
   {
-    
+
      $this->simpleloginsecure->logout();
      $data['page_title'] = 'Logged Out';
      $data['type'] = 'main';
      $this->load->view('messages/logged-out', $data);
-    
+
   }
 
 }
