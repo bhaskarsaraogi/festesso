@@ -1,13 +1,13 @@
 <?php include 'application/views/inc/header.php'; ?>
 
 <section>
-  
+
   <div class="page-header"><h1>Edit Profile <small>You can edit your profile here</small></h1></div>
-  
+
   <div class="well well-large">
     <h2>Your Personal Details</h2>
     <?php echo form_open_multipart('user/edit_profile', array('class' => 'form-horizontal')); ?>
-    
+
     <div class="control-group">
       <?php echo form_label('Full Name', 'fullName', array('class' => 'control-label')); ?>
       <div class="controls">
@@ -85,7 +85,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="control-group">
       <?php echo form_label('Contact Number', 'contact', array('class' => 'control-label')); ?>
       <div class="controls">
@@ -104,7 +104,26 @@
         </div>
       </div>
     </div>
-    
+
+    <div class="control-group">
+      <?php echo form_label('College Name', 'college_name', array('class' => 'control-label')); ?>
+      <div class="controls">
+        <div class="input-xlarge">
+          <?php
+          $arr_contact = array(
+            'name'          => 'college_name',
+            'id'            => 'college_name',
+            'class'         => 'span3',
+            'placeholder'   => 'Your college name here',
+            'value'         => set_value('college_name', $college_name)
+            );
+          echo form_input($arr_contact);
+          ?>
+          <p class="help-block"><em>It would be great if we can have your college name</em></p>
+        </div>
+      </div>
+    </div>
+
     <div class="control-group">
       <?php echo form_label('Profile Image', 'profile_image', array('class' => 'control-label')); ?>
       <div class="controls">
@@ -140,7 +159,7 @@
     echo '<div class="alert alert-error">'. $error.' </div>';
   echo validation_errors();
   ?>
-  
+
   <div class="well well-large">
     <h2>Change Your Password</h2>
     <?php echo form_open('user/change_password', array('class' => 'form-horizontal')); ?>
@@ -188,7 +207,7 @@
     </div>
     <?php echo form_close(); ?>
   </div>
-  
+
 </section>
 
 <?php include 'application/views/inc/footer.php'; ?>
