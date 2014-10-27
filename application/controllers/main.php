@@ -255,9 +255,5 @@ class Main extends CI_Controller {
     $this->load->view('standard/changelog', $data);
   }
 
-  public function bitswaves()
-  {
-    $data['page_title'] = '#bitswaves';
-    $this->load->view('standard/bitswaves', $data);
-  }
+
 }
