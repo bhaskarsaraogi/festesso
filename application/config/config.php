@@ -358,5 +358,10 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 
+$config['simpleloginsecure']['app_id'] = 'Enter your app-id here';
+$config['simpleloginsecure']['app_secret'] = 'Enter your secret appid here';
+$config['simpleloginsecure']['redirect_url'] = base_url().'index.php/main/fb_login/';
+$config['simpleloginsecure']['permissions'] = array('email'); //Insert other permissions
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */

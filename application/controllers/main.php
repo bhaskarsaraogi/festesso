@@ -7,6 +7,10 @@ class Main extends CI_Controller {
     parent::__construct();
     $this->load->model('user_model', 'user');
     $this->session->set_userdata(array('admin_controls' => FALSE));
+    if(!$this->session->userdata('logged_in'))
+    {
+        $this->simpleloginsecure->fblogin();
+    }
     if ($this->session->userdata('logged_in'))
     {
       redirect('user', 'location');
@@ -18,6 +22,14 @@ class Main extends CI_Controller {
     $data['page_title'] = 'Home';
     $data['user_count'] = $this->user->count_users();
     $this->load->view('standard/main', $data);
+  }
+
+  public function fb_login()
+  {
+      if ($this->simpleloginsecure->fblogin() && $this->session->userdata('logged_in')==TRUE) {
+          redirect('user','location');
+      }
+      redirect('main/login','location');
   }
 
   public function register()
@@ -255,9 +267,4 @@ class Main extends CI_Controller {
     $this->load->view('standard/changelog', $data);
   }
 
-  public function bitswaves()
-  {
-    $data['page_title'] = '#bitswaves';
-    $this->load->view('standard/bitswaves', $data);
-  }
 }
