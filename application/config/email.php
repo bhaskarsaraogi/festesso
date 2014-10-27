@@ -5,8 +5,8 @@
 	$config['smtp_host'] = 'ssl://smtp.googlemail.com';
 	$config['smtp_port'] = 465;
 	$config['newline'] = "\r\n";
-	$config['smtp_user'] = ''; //Add email here
-	$config['smtp_pass'] = ''; //Add password here
+	$config['smtp_user'] = 'f2012598@goa.bits-pilani.ac.in'; //Add email here
+	$config['smtp_pass'] = 'groperpbs@99'; //Add password here
 	$config['mailtype'] = 'html';
 	$config['charset'] = 'iso-8859-1';
 	$config['wordwrap'] = TRUE;
