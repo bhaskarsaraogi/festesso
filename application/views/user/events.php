@@ -27,7 +27,7 @@
       <dt>Minimum Participants:</dt>
       <dd><?php echo $value->max_part; ?></dd>
     </dl>
-    <a href="<?php echo site_url()."/user/events/register/".$value->event_id; ?>"><button class="btn btn-primary span3">Register</button></a>
+    <a href="<?php echo site_url()."/user/events/register/".$value->event_name; ?>"><button class="btn btn-primary span3">Register</button></a>
 
 
 

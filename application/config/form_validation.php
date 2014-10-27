@@ -140,8 +140,76 @@ $config = array(
                     'label'   => 'Contact',
                     'rules'   => 'xss_clean|is_natural'
                   )
-            )
-        );
+            ),
+            'user/events_register0'  => create_validator(0),
+            'user/events_register1'  => create_validator(1),
+            'user/events_register2'  => create_validator(2),
+            'user/events_register3'  => create_validator(3),
+            'user/events_register4'  => create_validator(4),
+            'user/events_register5'  => create_validator(5),
+            'user/events_register6'  => create_validator(6),
+            'user/events_register7'  => create_validator(7),
+            'user/events_register8'  => create_validator(8)
+    );
 
+function create_validator($min_part)
+{
+    $a = array();
+    array_push($a, array('field' => 'college_name', 'label' => 'College Name','rules'   => 'xss_clean|required'));
+    array_push($a, array('field' => 'team_name', 'label' => 'Team Name','rules'   => 'xss_clean'));
+    for ($i=0; $i < $min_part; $i++) { 
+        array_push($a, array('field'   => 'fullName'.$i,
+                             'label'   => 'Full Name of participant '.($i+1),
+                             'rules'   => 'xss_clean|required'
+                  ));
+        array_push($a, array('field'   => 'email'.$i,
+                             'label'   => 'Email of participant '.($i+1),
+                             'rules'   => 'xss_clean|required|valid_email'
+                  ));
+        array_push($a, array('field'   => 'contact'.$i,
+                             'label'   => 'Contact Number of participant '.($i+1),
+                             'rules'   => 'xss_clean|required|is_natural'
+                  ));
+        array_push($a, array('field'   => 'date'.$i,
+                             'label'   => 'Date',
+                             'rules'   => 'xss_clean|is_natural|greater_than[0]|less_than[32]'
+                  ));
+        array_push($a, array('field'   => 'month'.$i,
+                             'label'   => 'Month',
+                             'rules'   => 'xss_clean'
+                  ));
+        array_push($a, array('field'   => 'year'.$i,
+                             'label'   => 'Year',
+                             'rules'   => 'xss_clean|is_natural|exact_length[4]'
+                  ));
+    }
+    for ($i=$min_part; $i < 20; $i++) { 
+        array_push($a, array('field'   => 'fullName'.$i,
+                             'label'   => 'Full Name of participant '.($i+1),
+                             'rules'   => 'xss_clean'
+                  ));
+        array_push($a, array('field'   => 'email'.$i,
+                             'label'   => 'Email of participant '.($i+1),
+                             'rules'   => 'xss_clean|valid_email'
+                  ));
+        array_push($a, array('field'   => 'contact'.$i,
+                             'label'   => 'Contact Number of participant '.($i+1),
+                             'rules'   => 'xss_clean|is_natural'
+                  ));
+        array_push($a, array('field'   => 'date'.$i,
+                             'label'   => 'Date',
+                             'rules'   => 'xss_clean|is_natural|greater_than[0]|less_than[32]'
+                  ));
+        array_push($a, array('field'   => 'month'.$i,
+                             'label'   => 'Month',
+                             'rules'   => 'xss_clean'
+                  ));
+        array_push($a, array('field'   => 'year'.$i,
+                             'label'   => 'Year',
+                             'rules'   => 'xss_clean|is_natural|exact_length[4]'
+                  ));
+    }
+    return $a;
+}
 /* End of file form_validation.php */
 /* Location: /application/config/form_validation.php */ 

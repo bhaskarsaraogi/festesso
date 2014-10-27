@@ -76,6 +76,30 @@ class Event_model extends CI_Model {
   }
 
 
+  function register_info($data)
+  {
+    $this->db->insert_batch('info_register', $data);
+  }
+
+  function register_event($data)
+  {
+    $this->db->insert('register_event', $data);
+  }
+
+  function get_reg_id($data)
+  {
+    $result = $this->db->get_where('register_event', $data);
+    $id = $result->first_row()->reg_id;
+    return $id;
+  }
+
+  function check_if_registered($user_name,$event_id)
+  {
+    $result = $this->db->get_where('info_register', array('info_email' => $user_name, 'info_event_id' => $event_id));
+    return ($result->num_rows())?TRUE:FALSE;
+  }
+
+
 
 
 
