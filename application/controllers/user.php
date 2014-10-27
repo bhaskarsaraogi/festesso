@@ -22,7 +22,7 @@ class User extends CI_Controller {
   public function dashboard()
   {
       $data['page_title'] = 'Dashboard';
-      $user_name = $this->session->userdata('user_name');
+      $user_name = $this->session->userdata('user');
       $user_id = $this->user->get_userdetails_id($user_name);
       $user_details = $this->user->get_userdetails($user_name);
       $data['user_details'] = $user_details;
@@ -36,25 +36,16 @@ class User extends CI_Controller {
 
     $this->form_validation->set_error_delimiters('<div class="alert alert-error"><p>', '</p></div>');
 
-    $user_name = $this->session->userdata('user_name');
+    $user_name = $this->session->userdata('user');
 
     $user_details = $this->user->get_userdetails($user_name);
     $data['fullName'] = $user_details->name;
     if ($user_details->dob != NULL)
      {
        $dob = explode(' ', $user_details->dob);
-       if ($dob[0] != NULL)
-       {
          $data['date'] = $dob[0];
-       }
-       if ($dob[1] != NULL)
-       {
          $data['month'] = $dob[1];
-       }
-       if ($dob[2] != NULL)
-       {
          $data['year'] = $dob[2];
-       }
      }
     else
      {
@@ -64,6 +55,7 @@ class User extends CI_Controller {
      }
 
      $data['contact'] = $user_details->contact;
+     $data['college_name'] = $user_details->college_name;
 
      if ($this->form_validation->run('user/profile') == FALSE)
      {
@@ -73,6 +65,7 @@ class User extends CI_Controller {
      {
        $fullName = $this->input->post('fullName');
        $contact = $this->input->post('contact');
+       $college_name = $this->input->post('college_name');
        $dob = $this->input->post('date').' '.$this->input->post('month').' '.$this->input->post('year');
        if ($fullName)
          $arr_userdetails['name'] = $fullName;
@@ -87,6 +80,10 @@ class User extends CI_Controller {
          $arr_userdetails['contact'] = $contact;
        else
          $arr_userdetails['contact'] = NULL;
+       if ($college_name)
+         $arr_userdetails['college_name'] = $college_name;
+       else
+         $arr_userdetails['college_name'] = NULL;
         /*
          * Image Uploading
         */
@@ -140,7 +137,7 @@ class User extends CI_Controller {
 
   public function profile($query)
   {
-     $user_name = $this->session->userdata('user_name');
+     $user_name = $this->session->userdata('user');
      $user_id = $this->user->get_userdetails_id($user_name);
      if ($query == 'me' || $query == $user_name)
      {
@@ -166,19 +163,90 @@ class User extends CI_Controller {
 
   }
 
-  public function events($value='',$event_id='')
+  public function events($value='',$event_name='')
   {
-    if ($value == 'register' && $event_id != '') {
-      $user_name = $this->input->post('fullName');
-      if ($user_name) {
-        echo "hello";
-        die();
-      }
-      $data['page_title'] = "Register";
-      $event_details = $this->event->get_event_details($event_id);
+    if ($value == 'register' && $event_name != '') {
+      $event_details = $this->event->get_event_details($event_name, 'name');
       if ($event_details) {
+        $data['page_title'] = "Register";
         $data['event_details'] = $event_details;
-        $this->load->view('user/events_register', $data);
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+        $data['error'] = NULL;
+        if ($this->form_validation->run('user/events_register'.$event_details->min_part) == FALSE)
+        {
+          $this->load->view('user/events_register', $data);
+        }
+        else {
+          $college_name = $this->input->post('college_name');
+          $team_name = $this->input->post('team_name');
+          $user_name = array();
+          $contact = array();
+          $email = array();
+
+          for ($i=0; $i < $event_details->max_part; $i++) {
+            $user_name[$i] = $this->input->post('fullName'.$i);
+            $contact[$i] = $this->input->post('contact'.$i);
+            $email[$i] = $this->input->post('email'.$i);
+          }
+
+
+          if (!$this->unique_email(array_slice($email,0,$event_details->min_part)))
+          {
+            $data['error'] = 'Please enter unique email ids for each participant';
+            $this->load->view('user/events_register', $data);
+          }
+          else {
+            $flag = 0;
+            for ($i=0; $i < $event_details->min_part; $i++)
+            {
+              if($this->event->check_if_registered($email[$i],$event_details->event_id))
+              {
+                $flag = 1;
+                break;
+              }
+            }
+            if($flag)
+            {
+              $data['error'] = $user_name[$i].' is already registered for this event';
+              $this->load->view('user/events_register', $data);
+            }
+            else {
+              $reg_event['reg_event_id'] = $event_details->event_id;
+              $reg_event['reg_user_id'] = $this->session->userdata('user_id');
+              $reg_event['college_name'] = $college_name;
+              $reg_event['team_name'] = $team_name;
+              $this->event->register_event($reg_event);
+
+              $reg_id = $this->event->get_reg_id($reg_event);
+              $flag = $event_details->max_part;
+              for ($i=$event_details->min_part; $i < $event_details->max_part; $i++)
+              {
+                if($user_name[$i] == '')
+                {
+                  $flag = $i;
+                  break;
+                }
+              }
+
+              $info_reg = array();
+              for ($i=0; $i < $flag; $i++)
+              {
+                array_push($info_reg, array('info_event_id' => $event_details->event_id,
+                                            'info_reg_id'   => $reg_id,
+                                            'info_username' => $user_name[$i],
+                                            'info_email'    => $email[$i],
+                                            'info_contact'  => $contact[$i]
+                                            ));
+              }
+            $this->event->register_info($info_reg);
+            $data['event_name'] = $event_details->event_name;
+            $this->load->view('user/registered', $data);
+          }
+        }
+
+      }
+
+
       } else {
         $this->load->view('user/event_not_exist', $data);
       }
@@ -203,7 +271,7 @@ class User extends CI_Controller {
      else
      {
        $password = $this->input->post('password');
-       $user_name = $this->session->userdata('user_name');
+       $user_name = $this->session->userdata('user');
        $this->simpleloginsecure->new_password($user_name, $password);
        redirect('user/edit_profile', 'location');
      }
@@ -219,6 +287,15 @@ class User extends CI_Controller {
      $data['type'] = 'main';
      $this->load->view('messages/logged-out', $data);
 
+  }
+
+  private function unique_email($arr)
+  {
+    $a = array_unique($arr);
+    if(count($a)<count($arr)) {
+      return FALSE;
+    }
+    return TRUE;
   }
 
 }

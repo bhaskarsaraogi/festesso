@@ -21,6 +21,8 @@
             $flag++;
           if (!is_null($user_details->image_name))
             $flag++;
+          if (!is_null($user_details->college_name))
+            $flag++;
           ?>
           <div class="progress progress-striped <?php if ($flag < 4) echo 'progress-warning'; else if ($flag < 6) echo 'progress-info'; else echo 'progress-success'; ?> active">
             <div class="bar" style="width: <?php echo ($flag*10).'%;'; ?>;"></div>
@@ -30,6 +32,7 @@
             <li><i class="<?php if (!is_null($user_details->name)) echo 'icon-ok'; else echo 'icon-remove' ?>"></i>Name</li>
             <li><i class="<?php if (!is_null($user_details->dob)) echo 'icon-ok'; else echo 'icon-remove' ?>"></i>Date of Birth</li>
             <li><i class="<?php if (!is_null($user_details->contact)) echo 'icon-ok'; else echo 'icon-remove' ?>"></i>Contact</li>
+            <li><i class="<?php if (!is_null($user_details->college_name)) echo 'icon-ok'; else echo 'icon-remove' ?>"></i>college Name</li>
             <li><i class="<?php if (!is_null($user_details->image_name)) echo 'icon-ok'; else echo 'icon-remove' ?>"></i>Profile Image</li>
           </ul>
         </div>

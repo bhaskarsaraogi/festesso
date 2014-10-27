@@ -101,7 +101,8 @@ class SimpleLoginSecure
 
 			//Set session data
 			unset($user_data['user_password']);
-			$user_data['user'] = $user_data['user_email']; // for compatibility with Simplelogin
+			$user_data['user'] = $user_data['user_email'];
+			$user_data['user_id'] = $user_data['iduser_master']; // for compatibility with Simplelogin
 			$user_data['logged_in'] = true;
 			$this->CI->session->set_userdata($user_data);
 
