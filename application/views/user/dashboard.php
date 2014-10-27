@@ -2,7 +2,8 @@
 
 <section>
 
-  <div class="page-header"><h1>Dashboard <small>Welcome, <?php echo ($user_details->name)?$user_details->name:$this->session->userdata('user_name'); ?></small></h1></div>
+  <div class="page-header"><h1>Dashboard <small>Welcome, <?php echo ($user_details->name)?$user_details->name:$this->session->userdata('user_name'); ?></small></h1>
+  </div>
 
 
 
@@ -38,8 +39,21 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+
+<div class="span8">
+      <div class="well">
+        <div>
+        <?php if($events_registered)
+             {
+                foreach($events_registered as $value) { ?>
+                    <p> You have registered for event <b><?php echo $value; ?></b> watch this space and your email for cofirmation.</p>
+                <?php } ?>
+            <?php } else { ?>
+                <p>Please register <?php anchor(base_url().'index.php/user/events', 'here');?> for events.</p>
+            <?php } ?>
+        </div>
+      </div>
+    </div>
 
 <script type="text/javascript">
 $(document).ready(function() {

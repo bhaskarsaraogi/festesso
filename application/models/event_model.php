@@ -14,6 +14,13 @@ class Event_model extends CI_Model {
     return $id;
   }
 
+  function get_event_name($event_id)
+  {
+    $result = $this->db->get_where('event_master', array('event_id' => $event_id));
+    $name = $result->first_row()->event_name;
+    return $name;
+  }
+
   function check_event_exists($event_name)
   {
     $result = $this->db->get_where('event_master', array('event_name' => $event_name));
@@ -97,6 +104,19 @@ class Event_model extends CI_Model {
   {
     $result = $this->db->get_where('info_register', array('info_email' => $user_name, 'info_event_id' => $event_id));
     return ($result->num_rows())?TRUE:FALSE;
+  }
+
+  function events_registered($user_email)
+  {
+      $event_ids = $this->db->get_where('info_register', array('info_email' =>$user_email));
+      if ($event_ids->result()) {
+          $events = array();
+          foreach ($event_ids->result() as $row) {
+              array_push($events, $this->get_event_name($row->info_event_id));
+          }
+          return $events;
+      }
+      return FALSE;
   }
 
 

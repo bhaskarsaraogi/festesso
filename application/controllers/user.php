@@ -26,6 +26,8 @@ class User extends CI_Controller {
       $user_id = $this->user->get_userdetails_id($user_name);
       $user_details = $this->user->get_userdetails($user_name);
       $data['user_details'] = $user_details;
+      $events_registered = $this->event->events_registered($user_name);
+      $data['events_registered'] = $events_registered;
       $this->load->view('user/dashboard', $data);
   }
 
